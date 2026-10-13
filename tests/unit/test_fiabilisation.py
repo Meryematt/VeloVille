@@ -13,7 +13,10 @@ from api.services.fiabilisation import (
     normaliser_statut,
     normaliser_velo_id,
     separer_doublons,
+    signaler_technicien_absent,
+    verifier_cible,
     verifier_duree,
+    verifier_resolution,
     verifier_station,
     verifier_usager,
 )
@@ -267,3 +270,100 @@ def test_meme_identifiant_contenu_different_pas_doublon():
 
     assert len(uniques) == 2
     assert doublons == []
+
+
+# Cible d'un incident
+
+def test_cible_velo_correcte():
+    """Un incident sur un vélo avec un vélo et sans station est accepté."""
+
+    assert verifier_cible("velo", "V0745", None) == "velo"
+
+
+def test_cible_station_correcte():
+    """Un incident sur une station avec une station et sans vélo est accepté."""
+
+    assert verifier_cible("station", None, "S001") == "station"
+
+
+@pytest.mark.parametrize(
+    ("cible", "velo_id", "station_id"),
+    [
+        ("velo", None, None),
+        ("velo", "V0745", "S001"),
+        ("station", None, None),
+        ("station", "V0745", "S001"),
+        ("borne", None, "S001"),
+    ],
+)
+def test_cible_incoherente_rejetee(cible, velo_id, station_id):
+    """Un incident qui ne vise pas exactement un équipement est rejeté (RG6)."""
+
+    with pytest.raises(Rejet) as erreur:
+        verifier_cible(cible, velo_id, station_id)
+
+    assert erreur.value.colonne == "cible"
+
+
+# Date de résolution d'un incident
+
+SIGNALEMENT = datetime(2026, 7, 23, 18, 0)
+
+
+def test_resolution_coherente():
+    """Un incident résolu après son signalement est accepté."""
+
+    verifier_resolution("resolu", SIGNALEMENT, datetime(2026, 7, 24, 9, 0))
+
+
+def test_incident_ouvert_sans_resolution():
+    """Un incident ouvert sans date de résolution est accepté."""
+
+    verifier_resolution("ouvert", SIGNALEMENT, None)
+
+
+def test_resolution_avant_signalement_rejetee():
+    """Une résolution antérieure au signalement est rejetée (RG8)."""
+
+    with pytest.raises(Rejet) as erreur:
+        verifier_resolution("resolu", SIGNALEMENT, datetime(2026, 7, 22, 6, 0))
+
+    assert erreur.value.colonne == "date_resolution"
+
+
+def test_resolu_sans_date_rejete():
+    """Un incident résolu sans date de résolution est rejeté (RG8)."""
+
+    with pytest.raises(Rejet):
+        verifier_resolution("resolu", SIGNALEMENT, None)
+
+
+def test_date_sur_incident_non_resolu_rejetee():
+    """Une date de résolution sur un incident en cours est rejetée (RG8)."""
+
+    with pytest.raises(Rejet):
+        verifier_resolution("en_cours", SIGNALEMENT, datetime(2026, 7, 24, 9, 0))
+
+
+# Technicien
+
+def test_technicien_present():
+    """Un incident pris en charge avec technicien ne produit aucun avertissement."""
+
+    assert signaler_technicien_absent("en_cours", "A. Diallo") is None
+
+
+def test_technicien_absent_incident_ouvert():
+    """Un incident ouvert peut ne pas avoir encore de technicien."""
+
+    assert signaler_technicien_absent("ouvert", "") is None
+
+
+@pytest.mark.parametrize("statut", ["en_cours", "resolu"])
+def test_technicien_absent_signale(statut):
+    """Un incident pris en charge sans technicien produit un avertissement."""
+
+    avertissement = signaler_technicien_absent(statut, "")
+
+    assert avertissement is not None
+    assert avertissement.colonne == "technicien"

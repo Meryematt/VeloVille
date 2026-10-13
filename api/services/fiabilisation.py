@@ -213,3 +213,92 @@ def separer_doublons(
             uniques.append(ligne)
 
     return uniques, doublons
+
+
+# Cible d'un incident
+
+CIBLES = ("velo", "station")
+
+
+def verifier_cible(
+    cible: str,
+    velo_id: str | None,
+    station_id: str | None,
+) -> str:
+    """Vérifie qu'un incident vise soit un vélo, soit une station (RG6).
+
+    velo_id et station_id sont déjà nettoyés : None signifie absent.
+    """
+
+    cible_propre = cible.strip()
+
+    if cible_propre not in CIBLES:
+        raise Rejet("cible", cible, "Cible inconnue (RG6)")
+
+    if cible_propre == "velo" and (velo_id is None or station_id is not None):
+        raise Rejet(
+            "cible",
+            cible,
+            "Un incident sur un vélo doit porter un vélo et aucune station (RG6)",
+        )
+
+    if cible_propre == "station" and (station_id is None or velo_id is not None):
+        raise Rejet(
+            "cible",
+            cible,
+            "Un incident sur une station doit porter une station et aucun vélo (RG6)",
+        )
+
+    return cible_propre
+
+
+# Date de résolution d'un incident
+
+def verifier_resolution(
+    statut: str,
+    date_signalement: datetime,
+    date_resolution: datetime | None,
+) -> None:
+    """Vérifie la cohérence entre statut et date de résolution (RG8).
+
+    La date de résolution est présente si et seulement si l'incident est
+    résolu, et elle n'est pas antérieure à la date de signalement.
+    """
+
+    if statut == "resolu" and date_resolution is None:
+        raise Rejet("date_resolution", "", "Incident résolu sans date de résolution (RG8)")
+
+    if statut != "resolu" and date_resolution is not None:
+        raise Rejet(
+            "date_resolution",
+            str(date_resolution),
+            "Date de résolution sur un incident non résolu (RG8)",
+        )
+
+    if date_resolution is not None and date_resolution < date_signalement:
+        raise Rejet(
+            "date_resolution",
+            str(date_resolution),
+            "Date de résolution antérieure au signalement (RG8)",
+        )
+
+
+# Technicien
+
+def signaler_technicien_absent(
+    statut: str,
+    technicien: str,
+) -> Avertissement | None:
+    """Signale un incident pris en charge sans technicien (RG8).
+
+    L'absence n'empêche pas l'import : c'est un simple avertissement.
+    """
+
+    if statut in ("en_cours", "resolu") and not technicien.strip():
+        return Avertissement(
+            "technicien",
+            technicien,
+            "Technicien absent alors que l'incident est pris en charge (RG8)",
+        )
+
+    return None
