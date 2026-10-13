@@ -12,7 +12,14 @@ from api.services.fiabilisation import (
     normaliser_horodatage,
     normaliser_statut,
     normaliser_velo_id,
+    separer_doublons,
+    verifier_duree,
+    verifier_station,
+    verifier_usager,
 )
+
+# Petit référentiel utilisé par les tests de stations.
+STATIONS = {"S001", "S002", "S003"}
 
 
 # Horodatages
@@ -138,3 +145,125 @@ def test_statut_inconnu_rejete():
         normaliser_statut("annule")
 
     assert erreur.value.colonne == "statut"
+
+
+# Durée d'un trajet
+
+def test_duree_positive():
+    """Une durée entière positive est acceptée et convertie en entier."""
+
+    assert verifier_duree("215") == 215
+
+
+@pytest.mark.parametrize("valeur", ["0", "-45", "-120"])
+def test_duree_nulle_ou_negative_rejetee(valeur):
+    """Une durée nulle ou négative est rejetée (RG4)."""
+
+    with pytest.raises(Rejet) as erreur:
+        verifier_duree(valeur)
+
+    assert erreur.value.colonne == "duree_secondes"
+
+
+def test_duree_non_entiere_rejetee():
+    """Une durée qui n'est pas un nombre entier est rejetée (RG4)."""
+
+    with pytest.raises(Rejet):
+        verifier_duree("12.5")
+
+
+# Référence de station
+
+def test_station_existante():
+    """Une station du référentiel est acceptée."""
+
+    assert verifier_station("station_depart", "S001", STATIONS, True) == "S001"
+
+
+def test_station_inconnue_rejetee():
+    """Une station absente du référentiel est rejetée (RG2)."""
+
+    with pytest.raises(Rejet) as erreur:
+        verifier_station("station_arrivee", "S999", STATIONS, False)
+
+    assert erreur.value.colonne == "station_arrivee"
+    assert erreur.value.valeur == "S999"
+
+
+def test_station_facultative_absente():
+    """Une station d'arrivée vide est acceptée et vaut None (RG3)."""
+
+    assert verifier_station("station_arrivee", "", STATIONS, False) is None
+
+
+def test_station_obligatoire_absente_rejetee():
+    """Une station de départ vide est rejetée (RG2)."""
+
+    with pytest.raises(Rejet):
+        verifier_station("station_depart", "", STATIONS, True)
+
+
+# Type d'usager et pseudonyme
+
+def test_abonne_avec_pseudonyme():
+    """Un abonné avec pseudonyme est accepté."""
+
+    assert verifier_usager("abonne", "Ued311b7d") == ("abonne", "Ued311b7d")
+
+
+def test_occasionnel_sans_pseudonyme():
+    """Un occasionnel sans pseudonyme est accepté, le pseudonyme vaut None."""
+
+    assert verifier_usager("occasionnel", "") == ("occasionnel", None)
+
+
+def test_abonne_sans_pseudonyme_rejete():
+    """Un abonné sans pseudonyme est rejeté (RG5)."""
+
+    with pytest.raises(Rejet) as erreur:
+        verifier_usager("abonne", "")
+
+    assert erreur.value.colonne == "usager_ref"
+
+
+def test_occasionnel_avec_pseudonyme_rejete():
+    """Un occasionnel avec pseudonyme est rejeté (RG5)."""
+
+    with pytest.raises(Rejet):
+        verifier_usager("occasionnel", "Ued311b7d")
+
+
+def test_type_usager_inconnu_rejete():
+    """Un type d'usager hors des deux valeurs est rejeté."""
+
+    with pytest.raises(Rejet) as erreur:
+        verifier_usager("touriste", "")
+
+    assert erreur.value.colonne == "type_usager"
+
+
+# Doublons
+
+def test_doublons_separes():
+    """Seule la première occurrence d'une ligne identique est conservée."""
+
+    ligne_a = {"trajet_id": "T1", "duree_secondes": "100"}
+    ligne_b = {"trajet_id": "T2", "duree_secondes": "200"}
+
+    uniques, doublons = separer_doublons([ligne_a, ligne_b, dict(ligne_a)])
+
+    assert uniques == [ligne_a, ligne_b]
+    assert doublons == [ligne_a]
+
+
+def test_meme_identifiant_contenu_different_pas_doublon():
+    """Deux lignes de même identifiant mais de contenu différent ne sont
+    pas des doublons stricts : la règle de doublon ne les fusionne pas."""
+
+    ligne_a = {"trajet_id": "T1", "duree_secondes": "100"}
+    ligne_a_modifiee = {"trajet_id": "T1", "duree_secondes": "999"}
+
+    uniques, doublons = separer_doublons([ligne_a, ligne_a_modifiee])
+
+    assert len(uniques) == 2
+    assert doublons == []
