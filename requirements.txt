@@ -1,28 +1,26 @@
-# Dépendances du projet VéloVille.
-# À compléter : fixez une version pour chaque ligne (pip freeze ou
-# pip index versions <paquet>) avant le dépôt du dossier.
+# Dépendances du projet VéloVille (Python 3.14).
+# Seules les dépendances directes sont épinglées ; pip résout le reste.
 
 # API
-fastapi
-uvicorn
-sqlalchemy
-psycopg[binary]
-pydantic
-python-dotenv
+fastapi==0.143.0
+uvicorn==0.54.0
+sqlalchemy==2.1.4
+psycopg[binary]==3.3.6
+pydantic==2.14.1
+python-dotenv==1.2.4
 
 # Sécurité
-pyjwt
-bcrypt
-# passlib[bcrypt] est utilisable à condition d'épingler bcrypt<4.1
+pyjwt==2.15.1
+bcrypt==5.0.0
 
 # Données
-pandas
+pandas==3.0.6
 
 # Front
-streamlit
-requests
+streamlit==1.65.0
+requests==2.34.2
 
 # Tests
-pytest
-pytest-cov
-httpx
+pytest==9.1.1
+pytest-cov==7.1.0
+httpx==0.28.1
