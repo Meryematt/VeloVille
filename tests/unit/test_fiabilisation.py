@@ -3,19 +3,28 @@
 Aucune base de données n'est nécessaire : les fonctions testées sont pures.
 """
 
-from datetime import datetime
+from datetime import date, datetime
+from decimal import Decimal
 
 import pytest
 
 from api.services.fiabilisation import (
     Rejet,
+    convertir_date,
+    convertir_decimal,
+    fiabiliser_incident,
+    fiabiliser_station,
+    fiabiliser_trajet,
     normaliser_horodatage,
     normaliser_statut,
     normaliser_velo_id,
     separer_doublons,
     signaler_technicien_absent,
+    verifier_capacite,
     verifier_cible,
     verifier_duree,
+    verifier_identifiant_unique,
+    verifier_obligatoire,
     verifier_resolution,
     verifier_station,
     verifier_usager,
@@ -367,3 +376,202 @@ def test_technicien_absent_signale(statut):
 
     assert avertissement is not None
     assert avertissement.colonne == "technicien"
+
+
+# Valeurs génériques
+
+def test_valeur_obligatoire_presente():
+    """Une valeur renseignée est acceptée, sans ses espaces."""
+
+    assert verifier_obligatoire("nom", " Lille - Gare ") == "Lille - Gare"
+
+
+def test_valeur_obligatoire_absente_rejetee():
+    """Une valeur obligatoire vide est rejetée."""
+
+    with pytest.raises(Rejet) as erreur:
+        verifier_obligatoire("nom", "  ")
+
+    assert erreur.value.colonne == "nom"
+
+
+def test_identifiant_nouveau():
+    """Un identifiant pas encore retenu est accepté."""
+
+    assert verifier_identifiant_unique("trajet_id", "T2", {"T1"}) == "T2"
+
+
+def test_identifiant_deja_present_rejete():
+    """Un identifiant déjà retenu est rejeté."""
+
+    with pytest.raises(Rejet):
+        verifier_identifiant_unique("trajet_id", "T1", {"T1"})
+
+
+def test_decimal_converti():
+    """Une coordonnée est convertie en Decimal ; vide donne None."""
+
+    assert convertir_decimal("latitude", "50.59932") == Decimal("50.59932")
+    assert convertir_decimal("latitude", "") is None
+
+
+def test_decimal_illisible_rejete():
+    """Une coordonnée qui n'est pas un nombre est rejetée."""
+
+    with pytest.raises(Rejet):
+        convertir_decimal("latitude", "nord")
+
+
+def test_date_convertie():
+    """Une date AAAA-MM-JJ est convertie ; vide donne None."""
+
+    assert convertir_date("date_mise_en_service", "2023-08-07") == date(2023, 8, 7)
+    assert convertir_date("date_mise_en_service", "") is None
+
+
+def test_date_illisible_rejetee():
+    """Une date dans un autre format est rejetée."""
+
+    with pytest.raises(Rejet):
+        convertir_date("date_mise_en_service", "07/08/2023")
+
+
+# Capacité d'une station
+
+def test_capacite_positive():
+    """Une capacité entière positive est acceptée (RG1)."""
+
+    assert verifier_capacite("15") == 15
+
+
+@pytest.mark.parametrize("valeur", ["0", "-5", "quinze"])
+def test_capacite_invalide_rejetee(valeur):
+    """Une capacité nulle, négative ou non entière est rejetée (RG1)."""
+
+    with pytest.raises(Rejet) as erreur:
+        verifier_capacite(valeur)
+
+    assert erreur.value.colonne == "capacite"
+
+
+# Lignes complètes (exemples tirés des CSV fournis)
+
+LIGNE_STATION = {
+    "station_id": "S001",
+    "nom": "Lille - Gare",
+    "commune": "Lille",
+    "capacite": "15",
+    "latitude": "50.59932",
+    "longitude": "3.21953",
+    "date_mise_en_service": "2023-08-07",
+}
+
+LIGNE_TRAJET = {
+    "trajet_id": "T480001",
+    "velo_id": "V1167",
+    "depart_horodatage": "2026-08-24 08:39:56",
+    "station_depart": "S001",
+    "station_arrivee": "S002",
+    "duree_secondes": "215",
+    "type_usager": "abonne",
+    "usager_ref": "Ued311b7d",
+}
+
+LIGNE_INCIDENT = {
+    "incident_id": "I2026-0001",
+    "date_signalement": "2026-08-05 15:00",
+    "cible": "velo",
+    "velo_id": "V0745",
+    "station_id": "",
+    "type_incident": "vandalisme",
+    "statut": "En cours",
+    "date_resolution": "",
+    "technicien": "A. Diallo",
+}
+
+
+def test_station_complete():
+    """Une ligne de station correcte est entièrement convertie."""
+
+    station, avertissements = fiabiliser_station(LIGNE_STATION, set())
+
+    assert station["station_id"] == "S001"
+    assert station["capacite"] == 15
+    assert station["latitude"] == Decimal("50.59932")
+    assert station["date_mise_en_service"] == date(2023, 8, 7)
+    assert avertissements == []
+
+
+def test_trajet_complet():
+    """Une ligne de trajet correcte est acceptée sans avertissement."""
+
+    trajet, avertissements = fiabiliser_trajet(LIGNE_TRAJET, STATIONS, set())
+
+    assert trajet["depart_horodatage"] == datetime(2026, 8, 24, 8, 39, 56)
+    assert trajet["duree_secondes"] == 215
+    assert avertissements == []
+
+
+def test_trajet_normalise_garde_ses_avertissements():
+    """Un trajet corrigé à deux endroits produit deux avertissements."""
+
+    ligne = LIGNE_TRAJET | {
+        "velo_id": "v1167",
+        "depart_horodatage": "24/08/2026 08:39",
+    }
+
+    trajet, avertissements = fiabiliser_trajet(ligne, STATIONS, set())
+
+    assert trajet["velo_id"] == "V1167"
+    assert [a.colonne for a in avertissements] == ["velo_id", "depart_horodatage"]
+
+
+def test_trajet_vers_station_inconnue_rejete():
+    """Un trajet vers une station inconnue est rejeté (RG2)."""
+
+    ligne = LIGNE_TRAJET | {"station_arrivee": "S999"}
+
+    with pytest.raises(Rejet) as erreur:
+        fiabiliser_trajet(ligne, STATIONS, set())
+
+    assert erreur.value.colonne == "station_arrivee"
+
+
+def test_incident_complet_normalise():
+    """Un incident « En cours » est importé avec son statut normalisé."""
+
+    incident, avertissements = fiabiliser_incident(LIGNE_INCIDENT, STATIONS, set())
+
+    assert incident["statut"] == "en_cours"
+    assert incident["velo_id"] == "V0745"
+    assert incident["station_id"] is None
+    assert [a.colonne for a in avertissements] == ["statut"]
+
+
+def test_incident_resolu_sans_technicien_avertit():
+    """Un incident résolu sans technicien est importé avec un avertissement."""
+
+    ligne = LIGNE_INCIDENT | {
+        "statut": "resolu",
+        "date_resolution": "2026-08-07 10:00",
+        "technicien": "",
+    }
+
+    incident, avertissements = fiabiliser_incident(ligne, STATIONS, set())
+
+    assert incident["technicien"] is None
+    assert [a.colonne for a in avertissements] == ["technicien"]
+
+
+def test_incident_resolu_avant_signalement_rejete():
+    """Un incident résolu avant son signalement est rejeté (RG8)."""
+
+    ligne = LIGNE_INCIDENT | {
+        "statut": "Resolu",
+        "date_resolution": "2026-08-04 10:00",
+    }
+
+    with pytest.raises(Rejet) as erreur:
+        fiabiliser_incident(ligne, STATIONS, set())
+
+    assert erreur.value.colonne == "date_resolution"

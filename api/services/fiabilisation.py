@@ -7,7 +7,8 @@ corrigée, ou lève Rejet avec le motif lorsque la valeur est inacceptable.
 
 import re
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import date, datetime
+from decimal import Decimal, InvalidOperation
 
 
 @dataclass(frozen=True)
@@ -302,3 +303,225 @@ def signaler_technicien_absent(
         )
 
     return None
+
+
+# Valeurs génériques
+
+def verifier_obligatoire(colonne: str, valeur: str) -> str:
+    """Vérifie qu'une valeur obligatoire est renseignée."""
+
+    texte = valeur.strip()
+
+    if not texte:
+        raise Rejet(colonne, valeur, "Valeur obligatoire absente")
+
+    return texte
+
+
+def verifier_identifiant_unique(
+    colonne: str,
+    valeur: str,
+    deja_importes: set[str],
+) -> str:
+    """Vérifie qu'un identifiant n'a pas déjà été retenu dans le fichier.
+
+    Une ligne de même identifiant mais de contenu différent n'est pas un
+    doublon strict : on garde la première et on rejette les suivantes.
+    """
+
+    identifiant = verifier_obligatoire(colonne, valeur)
+
+    if identifiant in deja_importes:
+        raise Rejet(colonne, valeur, "Identifiant déjà présent avec un autre contenu")
+
+    return identifiant
+
+
+def convertir_decimal(colonne: str, valeur: str) -> Decimal | None:
+    """Convertit un nombre décimal facultatif ; vide donne None."""
+
+    texte = valeur.strip()
+
+    if not texte:
+        return None
+
+    try:
+        return Decimal(texte)
+    except InvalidOperation:
+        raise Rejet(colonne, valeur, "Nombre décimal illisible")
+
+
+def convertir_date(colonne: str, valeur: str) -> date | None:
+    """Convertit une date AAAA-MM-JJ facultative ; vide donne None."""
+
+    texte = valeur.strip()
+
+    if not texte:
+        return None
+
+    try:
+        return date.fromisoformat(texte)
+    except ValueError:
+        raise Rejet(colonne, valeur, "Date illisible (attendu AAAA-MM-JJ)")
+
+
+# Capacité d'une station
+
+def verifier_capacite(valeur: str) -> int:
+    """Vérifie que la capacité est un entier strictement positif (RG1)."""
+
+    try:
+        capacite = int(valeur.strip())
+    except ValueError:
+        raise Rejet("capacite", valeur, "Capacité non entière (RG1)")
+
+    if capacite <= 0:
+        raise Rejet("capacite", valeur, "Capacité nulle ou négative (RG1)")
+
+    return capacite
+
+
+# Fiabilisation d'une ligne complète
+#
+# Chaque fonction reçoit une ligne du CSV (dictionnaire colonne -> texte),
+# applique les règles ci-dessus dans l'ordre des colonnes et retourne :
+#   - la ligne nettoyée, prête à être insérée en base ;
+#   - la liste des avertissements produits.
+# Au premier Rejet, la ligne est abandonnée.
+
+def fiabiliser_station(
+    ligne: dict[str, str],
+    deja_importees: set[str],
+) -> tuple[dict, list[Avertissement]]:
+    """Contrôle une ligne de stations.csv."""
+
+    station = {
+        "station_id": verifier_identifiant_unique(
+            "station_id", ligne["station_id"], deja_importees
+        ),
+        "nom": verifier_obligatoire("nom", ligne["nom"]),
+        "commune": verifier_obligatoire("commune", ligne["commune"]),
+        "capacite": verifier_capacite(ligne["capacite"]),
+        "latitude": convertir_decimal("latitude", ligne["latitude"]),
+        "longitude": convertir_decimal("longitude", ligne["longitude"]),
+        "date_mise_en_service": convertir_date(
+            "date_mise_en_service", ligne["date_mise_en_service"]
+        ),
+    }
+
+    # Le référentiel des stations ne comporte aucune normalisation.
+    return station, []
+
+
+def fiabiliser_trajet(
+    ligne: dict[str, str],
+    stations_connues: set[str],
+    deja_importes: set[str],
+) -> tuple[dict, list[Avertissement]]:
+    """Contrôle une ligne de trajets.csv."""
+
+    avertissements = []
+
+    trajet_id = verifier_identifiant_unique(
+        "trajet_id", ligne["trajet_id"], deja_importes
+    )
+
+    velo_id, avertissement = normaliser_velo_id(ligne["velo_id"])
+    if avertissement:
+        avertissements.append(avertissement)
+
+    depart_horodatage, avertissement = normaliser_horodatage(
+        "depart_horodatage", ligne["depart_horodatage"]
+    )
+    if avertissement:
+        avertissements.append(avertissement)
+
+    station_depart = verifier_station(
+        "station_depart", ligne["station_depart"], stations_connues, True
+    )
+    station_arrivee = verifier_station(
+        "station_arrivee", ligne["station_arrivee"], stations_connues, False
+    )
+    duree_secondes = verifier_duree(ligne["duree_secondes"])
+    type_usager, usager_ref = verifier_usager(
+        ligne["type_usager"], ligne["usager_ref"]
+    )
+
+    trajet = {
+        "trajet_id": trajet_id,
+        "velo_id": velo_id,
+        "depart_horodatage": depart_horodatage,
+        "station_depart": station_depart,
+        "station_arrivee": station_arrivee,
+        "duree_secondes": duree_secondes,
+        "type_usager": type_usager,
+        "usager_ref": usager_ref,
+    }
+
+    return trajet, avertissements
+
+
+def fiabiliser_incident(
+    ligne: dict[str, str],
+    stations_connues: set[str],
+    deja_importes: set[str],
+) -> tuple[dict, list[Avertissement]]:
+    """Contrôle une ligne de incidents.csv."""
+
+    avertissements = []
+
+    incident_id = verifier_identifiant_unique(
+        "incident_id", ligne["incident_id"], deja_importes
+    )
+
+    date_signalement, avertissement = normaliser_horodatage(
+        "date_signalement", ligne["date_signalement"]
+    )
+    if avertissement:
+        avertissements.append(avertissement)
+
+    # Le vélo est facultatif : il n'est normalisé que s'il est renseigné.
+    velo_id = None
+    if ligne["velo_id"].strip():
+        velo_id, avertissement = normaliser_velo_id(ligne["velo_id"])
+        if avertissement:
+            avertissements.append(avertissement)
+
+    station_id = verifier_station(
+        "station_id", ligne["station_id"], stations_connues, False
+    )
+    cible = verifier_cible(ligne["cible"], velo_id, station_id)
+    type_incident = verifier_obligatoire("type_incident", ligne["type_incident"])
+
+    statut, avertissement = normaliser_statut(ligne["statut"])
+    if avertissement:
+        avertissements.append(avertissement)
+
+    # La date de résolution est facultative : vide donne None.
+    date_resolution = None
+    if ligne["date_resolution"].strip():
+        date_resolution, avertissement = normaliser_horodatage(
+            "date_resolution", ligne["date_resolution"]
+        )
+        if avertissement:
+            avertissements.append(avertissement)
+
+    verifier_resolution(statut, date_signalement, date_resolution)
+
+    avertissement = signaler_technicien_absent(statut, ligne["technicien"])
+    if avertissement:
+        avertissements.append(avertissement)
+
+    incident = {
+        "incident_id": incident_id,
+        "date_signalement": date_signalement,
+        "cible": cible,
+        "velo_id": velo_id,
+        "station_id": station_id,
+        "type_incident": type_incident,
+        "statut": statut,
+        "date_resolution": date_resolution,
+        "technicien": ligne["technicien"].strip() or None,
+    }
+
+    return incident, avertissements
