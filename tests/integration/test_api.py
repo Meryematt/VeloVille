@@ -151,8 +151,11 @@ def test_stations_filtre_commune(client, jeton_direction, donnees):
 
 @pytest.mark.parametrize(
     "params",
-    [{"page": 0}, {"taille_page": 0}, {"taille_page": 101}],
-    ids=["page_0", "taille_page_0", "taille_page_101"],
+    [
+        pytest.param({"page": 0}, id="page_0"),
+        pytest.param({"taille_page": 0}, id="taille_page_0"),
+        pytest.param({"taille_page": 101}, id="taille_page_101"),
+    ],
 )
 def test_stations_parametres_hors_bornes(client, jeton_direction, params):
     """Une page ou une taille de page hors bornes produit 422."""
