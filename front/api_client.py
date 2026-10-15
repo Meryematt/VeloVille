@@ -11,7 +11,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-API_URL = os.getenv("API_URL", "http://localhost:8000")
+# 127.0.0.1 et non localhost : sous Windows, localhost ajoute environ
+# 2 secondes à chaque appel (anomalie ANO-002).
+API_URL = os.getenv("API_URL", "http://127.0.0.1:8000")
 API_TIMEOUT_SECONDES = float(os.getenv("API_TIMEOUT_SECONDES", "5"))
 
 # Message affiché pour chaque code HTTP d'erreur.
