@@ -55,6 +55,10 @@ def call_api(method, path, token=None, params=None, json=None):
         raise ErreurApi("L'API met trop de temps à répondre. Réessayez plus tard.")
     except requests.exceptions.ConnectionError:
         raise ErreurApi("L'API est injoignable. Vérifiez qu'elle est démarrée.")
+    except requests.exceptions.RequestException:
+        # Toute autre erreur de requests (adresse mal écrite...) : un message
+        # en français plutôt qu'une trace Python à l'écran (ANO-003).
+        raise ErreurApi("Impossible de contacter l'API. Vérifiez l'adresse API_URL dans le fichier .env.")
 
     if response.status_code >= 400:
         message = MESSAGES_ERREUR.get(
