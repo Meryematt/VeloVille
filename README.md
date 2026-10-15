@@ -10,7 +10,8 @@ opérateur de vélos en libre-service (120 stations, 1 800 vélos). Elle :
 - les restitue dans un **front Streamlit** en tableaux et métriques, sans
   graphique.
 
-Version : **0.9.0** (version livrée avant recette).
+Version : **1.0.0** (version livrée après recette, voir
+[docs/recette/resultats-recette.md](docs/recette/resultats-recette.md)).
 Auteure : Meryem ATTARI.
 
 ## Structure du projet
@@ -133,7 +134,7 @@ l'import est dans `docs/journal-import.csv`.
 pytest --cov=api/services --cov-report=term-missing
 ```
 
-Résultat : **98 tests réussis**, couverture des modules métier
+Résultat : **110 tests réussis**, couverture des modules métier
 (`api/services`) : **98 %** (minimum demandé : 60 %).
 
 - `tests/unit/` : règles de fiabilisation (cas nominal et cas de rejet pour

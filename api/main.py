@@ -7,7 +7,7 @@ from api.routers import auth, incidents, indicateurs, stations, trajets
 app = FastAPI(
     title="API VéloVille",
     description="Données des stations, trajets et incidents de VéloVille.",
-    version="0.2.0",
+    version="1.0.0",
 )
 
 app.include_router(auth.router)
