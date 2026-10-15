@@ -33,3 +33,16 @@ def require_login():
     show_sidebar()
 
     return st.session_state["access_token"]
+
+
+def page_label(page, nb_pages):
+    """Texte affiché sous un tableau paginé.
+
+    Au-delà de la dernière page, on l'indique clairement au lieu
+    d'afficher « Page 9 sur 6 » (anomalie ANO-004).
+    """
+
+    if page > nb_pages:
+        return f"Page {page} : la dernière page est la page {nb_pages}."
+
+    return f"Page {page} sur {nb_pages}"

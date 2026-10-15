@@ -6,7 +6,7 @@ import pandas as pd
 import streamlit as st
 
 from api_client import ErreurApi, get_stations
-from session import require_login
+from session import page_label, require_login
 
 st.set_page_config(page_title="Stations - VéloVille", layout="wide")
 
@@ -74,4 +74,4 @@ else:
     st.dataframe(tableau, hide_index=True, width="stretch")
 
 nb_pages = max(1, math.ceil(donnees["total"] / taille_page))
-st.caption(f"Page {page} sur {nb_pages}")
+st.caption(page_label(page, nb_pages))
