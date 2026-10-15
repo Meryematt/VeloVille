@@ -19,6 +19,7 @@ REC-10, dans l'ordre.
 |---|---|---|---|---|---|
 | REC-01 | 15/10/2026 09:30 | v0.9.0 | OK | voir REC-01 | |
 | REC-02 | 15/10/2026 09:46 | v0.9.0 | KO | voir REC-02 | ANO-001 |
+| REC-02 (rejeu) | 15/10/2026 13:38 | 375762c | OK | voir REC-02, rejeu | ANO-001 corrigée |
 | REC-03 | 15/10/2026 09:56 | v0.9.0 | OK | voir REC-03 | |
 | REC-04 | 15/10/2026 10:10 | v0.9.0 | OK | voir REC-04 | |
 | REC-05 | 15/10/2026 10:17 | v0.9.0 | OK | voir REC-05 | |
@@ -195,6 +196,77 @@ incidents.csv,I2026-0018,technicien,,Technicien absent alors que l'incident est 
 ```
 
 **5. Aucune arrivée vers une station absente** (requête du plan)
+
+```bash
+psql -h localhost -U veloville -d veloville -c "SELECT count(*) FROM trajet t LEFT JOIN station s ON s.station_id = t.station_arrivee WHERE t.station_arrivee IS NOT NULL AND s.station_id IS NULL;"
+```
+
+```text
+ count
+-------
+     0
+```
+
+#### Rejeu après correction de ANO-001
+
+Rejoué le 15/10/2026 sur le commit `375762c` (branche `fix/ano-001`), après
+un nouvel import.
+
+Résultat obtenu : volumes et requête de l'étape 4 inchangés ; plus aucune
+case vide dans le journal (0 ligne au lieu de 37). Les doublons portent la
+colonne d'identifiant et sa valeur, les valeurs absentes sont écrites
+« (vide) ».
+
+Statut : OK
+
+**1. Nouvel import**
+
+```bash
+python scripts/importer.py
+```
+
+```text
+stations.csv : 120 lignes = 120 importées + 0 rejetées + 0 doublons écartés
+trajets.csv : 2030 lignes = 2002 importées + 16 rejetées + 12 doublons écartés
+incidents.csv : 180 lignes = 177 importées + 3 rejetées + 0 doublons écartés
+Journal : docs\journal-import.csv (190 lignes)
+```
+
+**2. Volumes**
+
+```bash
+wc -l data/stations.csv data/trajets.csv data/incidents.csv
+grep -c "doublon écarté" docs/journal-import.csv
+grep "^trajets.csv" docs/journal-import.csv | grep -c ",rejet"
+grep "^incidents.csv" docs/journal-import.csv | grep -c ",rejet"
+```
+
+```text
+   121 data/stations.csv
+  2031 data/trajets.csv
+   181 data/incidents.csv
+12
+16
+3
+```
+
+**3. Lignes du journal avec une case vide**
+
+```bash
+grep -c ",," docs/journal-import.csv
+grep "doublon écarté" docs/journal-import.csv | head -2
+grep "Technicien absent" docs/journal-import.csv | head -2
+```
+
+```text
+0
+trajets.csv,T480073,trajet_id,T480073,Ligne strictement identique à une ligne précédente,doublon écarté
+trajets.csv,T480078,trajet_id,T480078,Ligne strictement identique à une ligne précédente,doublon écarté
+incidents.csv,I2026-0011,technicien,(vide),Technicien absent alors que l'incident est pris en charge (RG8),normalisation
+incidents.csv,I2026-0018,technicien,(vide),Technicien absent alors que l'incident est pris en charge (RG8),normalisation
+```
+
+**4. Aucune arrivée vers une station absente**
 
 ```bash
 psql -h localhost -U veloville -d veloville -c "SELECT count(*) FROM trajet t LEFT JOIN station s ON s.station_id = t.station_arrivee WHERE t.station_arrivee IS NOT NULL AND s.station_id IS NULL;"
