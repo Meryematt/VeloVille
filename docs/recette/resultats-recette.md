@@ -833,6 +833,23 @@ Statut : OK
 
 ![ANO-004 rejeu](captures/ano004-rejeu-page-au-dela.png)
 
+## Vérification complémentaire : pseudonyme d'abonné et rôle direction
+
+Hors plan de recette. Relevée lors de la rédaction du procès-verbal
+(cahier des charges 7.3, RGPD : `usager_ref` n'est pas montré à la
+direction).
+
+Date : 15/10/2026 ; version : `1766888`.
+
+Résultat obtenu : avec un jeton du rôle direction, `GET /trajets` renvoie
+le pseudonyme des abonnés (`"usager_ref": "U6119911a"` pour T480276).
+
+Statut : KO (anomalie [ANO-005](anomalies/ANO-005.md))
+
+Preuve :
+
+![ANO-005 usager_ref visible par la direction](captures/ano005-usager-ref-direction.png)
+
 ## Synthèse
 
 | | Premier passage (`v0.9.0`) | Après corrections (`4a412c1`) |
