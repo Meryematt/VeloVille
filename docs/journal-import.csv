@@ -1,16 +1,16 @@
 fichier,identifiant,colonne,valeur,motif,decision
-trajets.csv,T480073,,,Ligne strictement identique à une ligne précédente,doublon écarté
-trajets.csv,T480078,,,Ligne strictement identique à une ligne précédente,doublon écarté
-trajets.csv,T480288,,,Ligne strictement identique à une ligne précédente,doublon écarté
-trajets.csv,T480293,,,Ligne strictement identique à une ligne précédente,doublon écarté
-trajets.csv,T480596,,,Ligne strictement identique à une ligne précédente,doublon écarté
-trajets.csv,T480847,,,Ligne strictement identique à une ligne précédente,doublon écarté
-trajets.csv,T480945,,,Ligne strictement identique à une ligne précédente,doublon écarté
-trajets.csv,T481625,,,Ligne strictement identique à une ligne précédente,doublon écarté
-trajets.csv,T481636,,,Ligne strictement identique à une ligne précédente,doublon écarté
-trajets.csv,T481776,,,Ligne strictement identique à une ligne précédente,doublon écarté
-trajets.csv,T481834,,,Ligne strictement identique à une ligne précédente,doublon écarté
-trajets.csv,T481927,,,Ligne strictement identique à une ligne précédente,doublon écarté
+trajets.csv,T480073,trajet_id,T480073,Ligne strictement identique à une ligne précédente,doublon écarté
+trajets.csv,T480078,trajet_id,T480078,Ligne strictement identique à une ligne précédente,doublon écarté
+trajets.csv,T480288,trajet_id,T480288,Ligne strictement identique à une ligne précédente,doublon écarté
+trajets.csv,T480293,trajet_id,T480293,Ligne strictement identique à une ligne précédente,doublon écarté
+trajets.csv,T480596,trajet_id,T480596,Ligne strictement identique à une ligne précédente,doublon écarté
+trajets.csv,T480847,trajet_id,T480847,Ligne strictement identique à une ligne précédente,doublon écarté
+trajets.csv,T480945,trajet_id,T480945,Ligne strictement identique à une ligne précédente,doublon écarté
+trajets.csv,T481625,trajet_id,T481625,Ligne strictement identique à une ligne précédente,doublon écarté
+trajets.csv,T481636,trajet_id,T481636,Ligne strictement identique à une ligne précédente,doublon écarté
+trajets.csv,T481776,trajet_id,T481776,Ligne strictement identique à une ligne précédente,doublon écarté
+trajets.csv,T481834,trajet_id,T481834,Ligne strictement identique à une ligne précédente,doublon écarté
+trajets.csv,T481927,trajet_id,T481927,Ligne strictement identique à une ligne précédente,doublon écarté
 trajets.csv,T480030,station_arrivee,S999,Station inconnue du référentiel (RG2),rejet
 trajets.csv,T480034,station_arrivee,S999,Station inconnue du référentiel (RG2),rejet
 trajets.csv,T480086,velo_id,v1281,Identifiant de vélo normalisé en V1281,normalisation
@@ -44,14 +44,14 @@ incidents.csv,I2026-0006,statut,RESOLU,Statut normalisé en resolu,normalisation
 incidents.csv,I2026-0007,statut,Ouvert,Statut normalisé en ouvert,normalisation
 incidents.csv,I2026-0008,statut,En cours,Statut normalisé en en_cours,normalisation
 incidents.csv,I2026-0009,statut,RESOLU,Statut normalisé en resolu,normalisation
-incidents.csv,I2026-0011,technicien,,Technicien absent alors que l'incident est pris en charge (RG8),normalisation
+incidents.csv,I2026-0011,technicien,(vide),Technicien absent alors que l'incident est pris en charge (RG8),normalisation
 incidents.csv,I2026-0012,statut,En cours,Statut normalisé en en_cours,normalisation
 incidents.csv,I2026-0014,statut,Ouvert,Statut normalisé en ouvert,normalisation
 incidents.csv,I2026-0015,statut,Resolu,Statut normalisé en resolu,normalisation
 incidents.csv,I2026-0016,statut,Resolu,Statut normalisé en resolu,normalisation
 incidents.csv,I2026-0017,statut,RESOLU,Statut normalisé en resolu,normalisation
 incidents.csv,I2026-0018,statut,En cours,Statut normalisé en en_cours,normalisation
-incidents.csv,I2026-0018,technicien,,Technicien absent alors que l'incident est pris en charge (RG8),normalisation
+incidents.csv,I2026-0018,technicien,(vide),Technicien absent alors que l'incident est pris en charge (RG8),normalisation
 incidents.csv,I2026-0020,statut,Ouvert,Statut normalisé en ouvert,normalisation
 incidents.csv,I2026-0021,statut,Ouvert,Statut normalisé en ouvert,normalisation
 incidents.csv,I2026-0022,statut,En cours,Statut normalisé en en_cours,normalisation
@@ -62,33 +62,33 @@ incidents.csv,I2026-0028,date_resolution,2026-07-22 06:00:00,Date de résolution
 incidents.csv,I2026-0029,statut,Ouvert,Statut normalisé en ouvert,normalisation
 incidents.csv,I2026-0030,statut,En cours,Statut normalisé en en_cours,normalisation
 incidents.csv,I2026-0031,statut,en cours,Statut normalisé en en_cours,normalisation
-incidents.csv,I2026-0031,technicien,,Technicien absent alors que l'incident est pris en charge (RG8),normalisation
+incidents.csv,I2026-0031,technicien,(vide),Technicien absent alors que l'incident est pris en charge (RG8),normalisation
 incidents.csv,I2026-0032,statut,En cours,Statut normalisé en en_cours,normalisation
-incidents.csv,I2026-0032,technicien,,Technicien absent alors que l'incident est pris en charge (RG8),normalisation
+incidents.csv,I2026-0032,technicien,(vide),Technicien absent alors que l'incident est pris en charge (RG8),normalisation
 incidents.csv,I2026-0033,statut,Ouvert,Statut normalisé en ouvert,normalisation
 incidents.csv,I2026-0035,statut,en cours,Statut normalisé en en_cours,normalisation
-incidents.csv,I2026-0035,technicien,,Technicien absent alors que l'incident est pris en charge (RG8),normalisation
+incidents.csv,I2026-0035,technicien,(vide),Technicien absent alors que l'incident est pris en charge (RG8),normalisation
 incidents.csv,I2026-0036,statut,En cours,Statut normalisé en en_cours,normalisation
 incidents.csv,I2026-0037,statut,Ouvert,Statut normalisé en ouvert,normalisation
 incidents.csv,I2026-0039,statut,Resolu,Statut normalisé en resolu,normalisation
-incidents.csv,I2026-0039,technicien,,Technicien absent alors que l'incident est pris en charge (RG8),normalisation
+incidents.csv,I2026-0039,technicien,(vide),Technicien absent alors que l'incident est pris en charge (RG8),normalisation
 incidents.csv,I2026-0040,statut,Resolu,Statut normalisé en resolu,normalisation
 incidents.csv,I2026-0043,statut,RESOLU,Statut normalisé en resolu,normalisation
 incidents.csv,I2026-0044,statut,En cours,Statut normalisé en en_cours,normalisation
 incidents.csv,I2026-0046,statut,RESOLU,Statut normalisé en resolu,normalisation
 incidents.csv,I2026-0047,statut,RESOLU,Statut normalisé en resolu,normalisation
-incidents.csv,I2026-0047,technicien,,Technicien absent alors que l'incident est pris en charge (RG8),normalisation
+incidents.csv,I2026-0047,technicien,(vide),Technicien absent alors que l'incident est pris en charge (RG8),normalisation
 incidents.csv,I2026-0048,statut,en cours,Statut normalisé en en_cours,normalisation
-incidents.csv,I2026-0048,technicien,,Technicien absent alors que l'incident est pris en charge (RG8),normalisation
+incidents.csv,I2026-0048,technicien,(vide),Technicien absent alors que l'incident est pris en charge (RG8),normalisation
 incidents.csv,I2026-0049,statut,en cours,Statut normalisé en en_cours,normalisation
 incidents.csv,I2026-0050,statut,En cours,Statut normalisé en en_cours,normalisation
-incidents.csv,I2026-0050,technicien,,Technicien absent alors que l'incident est pris en charge (RG8),normalisation
+incidents.csv,I2026-0050,technicien,(vide),Technicien absent alors que l'incident est pris en charge (RG8),normalisation
 incidents.csv,I2026-0052,statut,Ouvert,Statut normalisé en ouvert,normalisation
 incidents.csv,I2026-0053,statut,RESOLU,Statut normalisé en resolu,normalisation
-incidents.csv,I2026-0053,technicien,,Technicien absent alors que l'incident est pris en charge (RG8),normalisation
-incidents.csv,I2026-0054,technicien,,Technicien absent alors que l'incident est pris en charge (RG8),normalisation
+incidents.csv,I2026-0053,technicien,(vide),Technicien absent alors que l'incident est pris en charge (RG8),normalisation
+incidents.csv,I2026-0054,technicien,(vide),Technicien absent alors que l'incident est pris en charge (RG8),normalisation
 incidents.csv,I2026-0055,statut,en cours,Statut normalisé en en_cours,normalisation
-incidents.csv,I2026-0056,technicien,,Technicien absent alors que l'incident est pris en charge (RG8),normalisation
+incidents.csv,I2026-0056,technicien,(vide),Technicien absent alors que l'incident est pris en charge (RG8),normalisation
 incidents.csv,I2026-0059,statut,RESOLU,Statut normalisé en resolu,normalisation
 incidents.csv,I2026-0060,statut,Resolu,Statut normalisé en resolu,normalisation
 incidents.csv,I2026-0061,statut,Resolu,Statut normalisé en resolu,normalisation
@@ -99,7 +99,7 @@ incidents.csv,I2026-0067,statut,en cours,Statut normalisé en en_cours,normalisa
 incidents.csv,I2026-0068,statut,en cours,Statut normalisé en en_cours,normalisation
 incidents.csv,I2026-0069,statut,En cours,Statut normalisé en en_cours,normalisation
 incidents.csv,I2026-0071,statut,en cours,Statut normalisé en en_cours,normalisation
-incidents.csv,I2026-0072,technicien,,Technicien absent alors que l'incident est pris en charge (RG8),normalisation
+incidents.csv,I2026-0072,technicien,(vide),Technicien absent alors que l'incident est pris en charge (RG8),normalisation
 incidents.csv,I2026-0073,statut,En cours,Statut normalisé en en_cours,normalisation
 incidents.csv,I2026-0075,statut,en cours,Statut normalisé en en_cours,normalisation
 incidents.csv,I2026-0077,statut,Resolu,Statut normalisé en resolu,normalisation
@@ -108,15 +108,15 @@ incidents.csv,I2026-0079,statut,en cours,Statut normalisé en en_cours,normalisa
 incidents.csv,I2026-0080,statut,Ouvert,Statut normalisé en ouvert,normalisation
 incidents.csv,I2026-0082,statut,RESOLU,Statut normalisé en resolu,normalisation
 incidents.csv,I2026-0084,statut,Resolu,Statut normalisé en resolu,normalisation
-incidents.csv,I2026-0085,technicien,,Technicien absent alors que l'incident est pris en charge (RG8),normalisation
+incidents.csv,I2026-0085,technicien,(vide),Technicien absent alors que l'incident est pris en charge (RG8),normalisation
 incidents.csv,I2026-0087,statut,Resolu,Statut normalisé en resolu,normalisation
-incidents.csv,I2026-0087,technicien,,Technicien absent alors que l'incident est pris en charge (RG8),normalisation
+incidents.csv,I2026-0087,technicien,(vide),Technicien absent alors que l'incident est pris en charge (RG8),normalisation
 incidents.csv,I2026-0088,statut,en cours,Statut normalisé en en_cours,normalisation
-incidents.csv,I2026-0089,technicien,,Technicien absent alors que l'incident est pris en charge (RG8),normalisation
+incidents.csv,I2026-0089,technicien,(vide),Technicien absent alors que l'incident est pris en charge (RG8),normalisation
 incidents.csv,I2026-0090,statut,Resolu,Statut normalisé en resolu,normalisation
 incidents.csv,I2026-0091,statut,Resolu,Statut normalisé en resolu,normalisation
 incidents.csv,I2026-0092,statut,RESOLU,Statut normalisé en resolu,normalisation
-incidents.csv,I2026-0092,technicien,,Technicien absent alors que l'incident est pris en charge (RG8),normalisation
+incidents.csv,I2026-0092,technicien,(vide),Technicien absent alors que l'incident est pris en charge (RG8),normalisation
 incidents.csv,I2026-0093,statut,en cours,Statut normalisé en en_cours,normalisation
 incidents.csv,I2026-0094,statut,En cours,Statut normalisé en en_cours,normalisation
 incidents.csv,I2026-0096,statut,en cours,Statut normalisé en en_cours,normalisation
@@ -129,14 +129,14 @@ incidents.csv,I2026-0105,statut,Resolu,Statut normalisé en resolu,normalisation
 incidents.csv,I2026-0106,statut,Resolu,Statut normalisé en resolu,normalisation
 incidents.csv,I2026-0107,statut,Resolu,Statut normalisé en resolu,normalisation
 incidents.csv,I2026-0108,statut,RESOLU,Statut normalisé en resolu,normalisation
-incidents.csv,I2026-0108,technicien,,Technicien absent alors que l'incident est pris en charge (RG8),normalisation
+incidents.csv,I2026-0108,technicien,(vide),Technicien absent alors que l'incident est pris en charge (RG8),normalisation
 incidents.csv,I2026-0109,statut,Resolu,Statut normalisé en resolu,normalisation
 incidents.csv,I2026-0110,statut,Ouvert,Statut normalisé en ouvert,normalisation
 incidents.csv,I2026-0111,statut,En cours,Statut normalisé en en_cours,normalisation
 incidents.csv,I2026-0112,statut,Ouvert,Statut normalisé en ouvert,normalisation
-incidents.csv,I2026-0115,technicien,,Technicien absent alors que l'incident est pris en charge (RG8),normalisation
+incidents.csv,I2026-0115,technicien,(vide),Technicien absent alors que l'incident est pris en charge (RG8),normalisation
 incidents.csv,I2026-0116,statut,en cours,Statut normalisé en en_cours,normalisation
-incidents.csv,I2026-0116,technicien,,Technicien absent alors que l'incident est pris en charge (RG8),normalisation
+incidents.csv,I2026-0116,technicien,(vide),Technicien absent alors que l'incident est pris en charge (RG8),normalisation
 incidents.csv,I2026-0120,statut,en cours,Statut normalisé en en_cours,normalisation
 incidents.csv,I2026-0121,statut,Resolu,Statut normalisé en resolu,normalisation
 incidents.csv,I2026-0123,statut,en cours,Statut normalisé en en_cours,normalisation
@@ -144,7 +144,7 @@ incidents.csv,I2026-0124,date_resolution,2026-07-11 09:00:00,Date de résolution
 incidents.csv,I2026-0125,statut,RESOLU,Statut normalisé en resolu,normalisation
 incidents.csv,I2026-0126,statut,RESOLU,Statut normalisé en resolu,normalisation
 incidents.csv,I2026-0127,statut,RESOLU,Statut normalisé en resolu,normalisation
-incidents.csv,I2026-0127,technicien,,Technicien absent alors que l'incident est pris en charge (RG8),normalisation
+incidents.csv,I2026-0127,technicien,(vide),Technicien absent alors que l'incident est pris en charge (RG8),normalisation
 incidents.csv,I2026-0128,statut,Ouvert,Statut normalisé en ouvert,normalisation
 incidents.csv,I2026-0130,statut,Resolu,Statut normalisé en resolu,normalisation
 incidents.csv,I2026-0131,statut,Ouvert,Statut normalisé en ouvert,normalisation
@@ -152,7 +152,7 @@ incidents.csv,I2026-0133,statut,Resolu,Statut normalisé en resolu,normalisation
 incidents.csv,I2026-0134,statut,Ouvert,Statut normalisé en ouvert,normalisation
 incidents.csv,I2026-0135,statut,RESOLU,Statut normalisé en resolu,normalisation
 incidents.csv,I2026-0136,statut,RESOLU,Statut normalisé en resolu,normalisation
-incidents.csv,I2026-0136,technicien,,Technicien absent alors que l'incident est pris en charge (RG8),normalisation
+incidents.csv,I2026-0136,technicien,(vide),Technicien absent alors que l'incident est pris en charge (RG8),normalisation
 incidents.csv,I2026-0137,statut,RESOLU,Statut normalisé en resolu,normalisation
 incidents.csv,I2026-0140,statut,RESOLU,Statut normalisé en resolu,normalisation
 incidents.csv,I2026-0141,statut,Ouvert,Statut normalisé en ouvert,normalisation
@@ -162,7 +162,7 @@ incidents.csv,I2026-0144,statut,Ouvert,Statut normalisé en ouvert,normalisation
 incidents.csv,I2026-0145,statut,Ouvert,Statut normalisé en ouvert,normalisation
 incidents.csv,I2026-0147,statut,en cours,Statut normalisé en en_cours,normalisation
 incidents.csv,I2026-0148,statut,en cours,Statut normalisé en en_cours,normalisation
-incidents.csv,I2026-0148,technicien,,Technicien absent alors que l'incident est pris en charge (RG8),normalisation
+incidents.csv,I2026-0148,technicien,(vide),Technicien absent alors que l'incident est pris en charge (RG8),normalisation
 incidents.csv,I2026-0149,statut,RESOLU,Statut normalisé en resolu,normalisation
 incidents.csv,I2026-0150,statut,Resolu,Statut normalisé en resolu,normalisation
 incidents.csv,I2026-0151,statut,Ouvert,Statut normalisé en ouvert,normalisation
@@ -182,10 +182,10 @@ incidents.csv,I2026-0168,statut,en cours,Statut normalisé en en_cours,normalisa
 incidents.csv,I2026-0169,statut,Ouvert,Statut normalisé en ouvert,normalisation
 incidents.csv,I2026-0170,statut,Resolu,Statut normalisé en resolu,normalisation
 incidents.csv,I2026-0171,statut,Ouvert,Statut normalisé en ouvert,normalisation
-incidents.csv,I2026-0172,technicien,,Technicien absent alors que l'incident est pris en charge (RG8),normalisation
+incidents.csv,I2026-0172,technicien,(vide),Technicien absent alors que l'incident est pris en charge (RG8),normalisation
 incidents.csv,I2026-0173,statut,En cours,Statut normalisé en en_cours,normalisation
 incidents.csv,I2026-0174,statut,En cours,Statut normalisé en en_cours,normalisation
 incidents.csv,I2026-0178,date_resolution,2026-07-14 19:00:00,Date de résolution antérieure au signalement (RG8),rejet
 incidents.csv,I2026-0179,statut,RESOLU,Statut normalisé en resolu,normalisation
 incidents.csv,I2026-0180,statut,RESOLU,Statut normalisé en resolu,normalisation
-incidents.csv,I2026-0180,technicien,,Technicien absent alors que l'incident est pris en charge (RG8),normalisation
+incidents.csv,I2026-0180,technicien,(vide),Technicien absent alors que l'incident est pris en charge (RG8),normalisation

@@ -525,3 +525,22 @@ def fiabiliser_incident(
     }
 
     return incident, avertissements
+
+
+# Journal de l'import
+
+def journal_line(fichier, identifiant, colonne, valeur, motif, decision) -> list[str]:
+    """Prépare une ligne du journal de l'import.
+
+    Une information vide est écrite « (vide) » : chaque ligne porte ainsi
+    les six informations demandées (correction de l'anomalie ANO-001).
+    """
+
+    ligne = []
+    for information in (fichier, identifiant, colonne, valeur, motif, decision):
+        if information:
+            ligne.append(information)
+        else:
+            ligne.append("(vide)")
+
+    return ligne
