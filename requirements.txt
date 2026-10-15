@@ -1,5 +1,4 @@
-# Dépendances du projet VéloVille (Python 3.14).
-# Seules les dépendances directes sont épinglées ; pip résout le reste.
+# Dépendances du projet VéloVille (Python 3.12 ou plus, testé avec 3.14).
 
 # API
 fastapi==0.143.0

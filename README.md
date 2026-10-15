@@ -20,7 +20,8 @@ api/            API FastAPI : main.py, database.py, models.py, schemas.py,
                 securite.py, routers/ (une ressource par fichier),
                 services/ (logique métier : fiabilisation, indicateurs...)
 front/          Front Streamlit : app.py (connexion), pages/, api_client.py
-scripts/        importer.py (import et fiabilisation), sauvegarde.sh
+scripts/        importer.py (import et fiabilisation), sauvegarde.sh,
+                purge.py (suppression des trajets anciens)
 sql/            schema.sql (création des tables), comptes.sql (2 comptes)
 tests/          tests unitaires (unit/) et d'intégration (integration/)
 data/           les 3 exports CSV
@@ -104,6 +105,20 @@ streamlit run front/app.py
 Le front s'ouvre sur http://localhost:8501. Comptes fournis :
 `exploitant01` et `direction01` (voir `sql/comptes.sql`).
 
+## Maintenance
+
+- **Sauvegarde** : `bash scripts/sauvegarde.sh` (dans Git Bash) crée
+  `sauvegardes/veloville_AAAAMMJJ_HHMMSS.dump`. La restauration est
+  décrite dans [docs/procedure-deploiement.md](docs/procedure-deploiement.md).
+- **Purge des trajets anciens** : le cahier des charges limite la
+  conservation des trajets détaillés à 13 mois (RGPD). Le script supprime
+  les trajets de plus de N jours ; par défaut il ne fait qu'une simulation.
+
+```powershell
+python scripts/purge.py --jours 395             # simulation : affiche le nombre de trajets concernés
+python scripts/purge.py --jours 395 --executer  # suppression réelle
+```
+
 ## Audit des données
 
 L'audit des trois exports CSV (défauts trouvés, nombre de lignes
@@ -118,7 +133,7 @@ l'import est dans `docs/journal-import.csv`.
 pytest --cov=api/services --cov-report=term-missing
 ```
 
-Résultat : **95 tests réussis**, couverture des modules métier
+Résultat : **98 tests réussis**, couverture des modules métier
 (`api/services`) : **98 %** (minimum demandé : 60 %).
 
 - `tests/unit/` : règles de fiabilisation (cas nominal et cas de rejet pour
@@ -232,6 +247,13 @@ performance (voir « Axes d'amélioration »).
   carte.
 - **Écran Indicateurs** : un message d'erreur s'affiche si la date de début
   est postérieure à la date de fin.
+- **Script de purge plutôt que script de contrôle d'intégrité.** Le sujet
+  proposait l'un ou l'autre en bonus. La purge répond à un besoin du cahier
+  des charges (conservation des trajets limitée à 13 mois, RGPD). Un
+  contrôle d'intégrité serait peu utile ici : les contraintes `CHECK` et les
+  clés étrangères du schéma empêchent déjà toute donnée qui viole les
+  règles de gestion d'entrer en base, son rapport afficherait donc toujours
+  zéro anomalie.
 
 ## Écarts au contrat
 
@@ -265,8 +287,8 @@ performance (voir « Axes d'amélioration »).
 - **Période par défaut des indicateurs calculée à partir des données** :
   premier et dernier jour renvoyés par l'indicateur d'activité sans bornes.
 - **Masquer `usager_ref` pour le rôle direction** dans l'API.
-- **Script de purge** des trajets de plus de 13 mois, durée de conservation
-  prévue par le cahier des charges.
+- **Planifier la purge** (par exemple chaque nuit) : la V1 fournit le
+  script, la planification est prévue en V2 par le cahier des charges.
 - **Tests de bout en bout du front** (par exemple avec Playwright).
 
 ## Documentation
