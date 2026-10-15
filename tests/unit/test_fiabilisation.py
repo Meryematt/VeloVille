@@ -132,13 +132,13 @@ def test_statut_correct():
 
 
 @pytest.mark.parametrize(
-    ("valeur", "attendu"),
+    "valeur, attendu",
     [
-        ("Ouvert", "ouvert"),
-        ("RESOLU", "resolu"),
-        ("Resolu", "resolu"),
-        ("En cours", "en_cours"),
-        ("en cours", "en_cours"),
+        pytest.param("Ouvert", "ouvert", id="majuscule_initiale"),
+        pytest.param("RESOLU", "resolu", id="tout_en_majuscules"),
+        pytest.param("Resolu", "resolu", id="majuscule_initiale_resolu"),
+        pytest.param("En cours", "en_cours", id="espace_et_majuscule"),
+        pytest.param("en cours", "en_cours", id="espace_au_lieu_de_tiret_bas"),
     ],
 )
 def test_statut_normalise(valeur, attendu):
@@ -167,7 +167,14 @@ def test_duree_positive():
     assert verifier_duree("215") == 215
 
 
-@pytest.mark.parametrize("valeur", ["0", "-45", "-120"])
+@pytest.mark.parametrize(
+    "valeur",
+    [
+        pytest.param("0", id="duree_nulle"),
+        pytest.param("-45", id="duree_negative_45"),
+        pytest.param("-120", id="duree_negative_120"),
+    ],
+)
 def test_duree_nulle_ou_negative_rejetee(valeur):
     """Une durée nulle ou négative est rejetée (RG4)."""
 
@@ -296,13 +303,13 @@ def test_cible_station_correcte():
 
 
 @pytest.mark.parametrize(
-    ("cible", "velo_id", "station_id"),
+    "cible, velo_id, station_id",
     [
-        ("velo", None, None),
-        ("velo", "V0745", "S001"),
-        ("station", None, None),
-        ("station", "V0745", "S001"),
-        ("borne", None, "S001"),
+        pytest.param("velo", None, None, id="velo_sans_velo"),
+        pytest.param("velo", "V0745", "S001", id="velo_avec_station_en_trop"),
+        pytest.param("station", None, None, id="station_sans_station"),
+        pytest.param("station", "V0745", "S001", id="station_avec_velo_en_trop"),
+        pytest.param("borne", None, "S001", id="cible_inconnue"),
     ],
 )
 def test_cible_incoherente_rejetee(cible, velo_id, station_id):
@@ -368,7 +375,13 @@ def test_technicien_absent_incident_ouvert():
     assert signaler_technicien_absent("ouvert", "") is None
 
 
-@pytest.mark.parametrize("statut", ["en_cours", "resolu"])
+@pytest.mark.parametrize(
+    "statut",
+    [
+        pytest.param("en_cours", id="incident_en_cours"),
+        pytest.param("resolu", id="incident_resolu"),
+    ],
+)
 def test_technicien_absent_signale(statut):
     """Un incident pris en charge sans technicien produit un avertissement."""
 
@@ -444,7 +457,14 @@ def test_capacite_positive():
     assert verifier_capacite("15") == 15
 
 
-@pytest.mark.parametrize("valeur", ["0", "-5", "quinze"])
+@pytest.mark.parametrize(
+    "valeur",
+    [
+        pytest.param("0", id="capacite_nulle"),
+        pytest.param("-5", id="capacite_negative"),
+        pytest.param("quinze", id="capacite_non_entiere"),
+    ],
+)
 def test_capacite_invalide_rejetee(valeur):
     """Une capacité nulle, négative ou non entière est rejetée (RG1)."""
 
