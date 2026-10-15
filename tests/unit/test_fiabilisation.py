@@ -15,6 +15,7 @@ from api.services.fiabilisation import (
     fiabiliser_incident,
     fiabiliser_station,
     fiabiliser_trajet,
+    journal_line,
     normaliser_horodatage,
     normaliser_statut,
     normaliser_velo_id,
@@ -595,3 +596,27 @@ def test_incident_resolu_avant_signalement_rejete():
         fiabiliser_incident(ligne, STATIONS, set())
 
     assert erreur.value.colonne == "date_resolution"
+
+
+# Journal de l'import (non-régression ANO-001)
+
+def test_ligne_journal_complete_inchangee():
+    """Une ligne dont les six informations sont renseignées est gardée telle quelle."""
+
+    ligne = journal_line("trajets.csv", "T480030", "station_arrivee", "S999",
+                         "Station inconnue du référentiel (RG2)", "rejet")
+
+    assert ligne == ["trajets.csv", "T480030", "station_arrivee", "S999",
+                     "Station inconnue du référentiel (RG2)", "rejet"]
+
+
+def test_ligne_journal_valeur_vide_remplacee():
+    """Une valeur vide (technicien absent) est écrite « (vide) » (ANO-001)."""
+
+    ligne = journal_line("incidents.csv", "I2026-0011", "technicien", "",
+                         "Technicien absent alors que l'incident est pris en charge (RG8)",
+                         "normalisation")
+
+    assert ligne[3] == "(vide)"
+    assert all(ligne)
+

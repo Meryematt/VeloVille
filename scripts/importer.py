@@ -6,8 +6,6 @@ le journal des rejets et avertissements dans docs/journal-import.csv.
 
 Idempotent : les trois tables sont vidées puis rechargées dans une seule
 transaction ; deux exécutions donnent donc la même base.
-
-Usage : python scripts/importer.py
 """
 
 import csv
@@ -27,6 +25,7 @@ from api.services.fiabilisation import (
     fiabiliser_incident,
     fiabiliser_station,
     fiabiliser_trajet,
+    journal_line,
     separer_doublons,
 )
 
@@ -50,14 +49,15 @@ def importer_fichier(db, journal, nom_fichier, modele, colonne_id, stations):
     uniques, doublons = separer_doublons(lignes)
 
     for ligne in doublons:
-        journal.append([
+        # Le doublon est identifié par la colonne d'identifiant et sa valeur.
+        journal.append(journal_line(
             nom_fichier,
             ligne[colonne_id],
-            "",
-            "",
+            colonne_id,
+            ligne[colonne_id],
             "Ligne strictement identique à une ligne précédente",
             "doublon écarté",
-        ])
+        ))
 
     deja_importes = set()
     nb_rejets = 0
@@ -71,26 +71,26 @@ def importer_fichier(db, journal, nom_fichier, modele, colonne_id, stations):
             else:
                 propre, avertissements = fiabiliser_incident(ligne, stations, deja_importes)
         except Rejet as rejet:
-            journal.append([
+            journal.append(journal_line(
                 nom_fichier,
                 ligne[colonne_id],
                 rejet.colonne,
                 rejet.valeur,
                 rejet.motif,
                 "rejet",
-            ])
+            ))
             nb_rejets += 1
             continue
 
         for avertissement in avertissements:
-            journal.append([
+            journal.append(journal_line(
                 nom_fichier,
                 propre[colonne_id],
                 avertissement.colonne,
                 avertissement.valeur,
                 avertissement.motif,
                 "normalisation",
-            ])
+            ))
 
         db.add(modele(**propre))
         deja_importes.add(propre[colonne_id])
