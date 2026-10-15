@@ -768,6 +768,29 @@ grep "^API_URL" .env
 API_URL=http://localhost:8000
 ```
 
+### Rejeu après correction de ANO-002
+
+Rejoué le 15/10/2026 14:02 sur le commit `90dbe51` (branche `fix/ano-002`),
+avec `API_URL=http://127.0.0.1:8000` dans `.env` et le front redémarré.
+
+Résultat obtenu : l'adresse configurée pour le front est `127.0.0.1` et un
+appel à l'API répond en 0,02 seconde. Dans le front, connecté avec
+`direction01`, les écrans Stations, Incidents et Indicateurs s'affichent
+rapidement à chaque clic (constat de l'utilisatrice, au lieu d'environ 4
+secondes avant correction).
+
+Statut : OK
+
+```bash
+grep "^API_URL" .env
+python -c "import time, requests; t = time.time(); requests.get('http://127.0.0.1:8000/sante'); print(round(time.time() - t, 2), 'secondes')"
+```
+
+```text
+API_URL=http://127.0.0.1:8000
+0.02 secondes
+```
+
 ## Synthèse
 
 À remplir après la campagne : N cas exécutés sur 10 ; N OK, N KO, N NT ;
