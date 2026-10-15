@@ -50,3 +50,18 @@ def list_trajets(
     ).all()
 
     return total, list(trajets)
+
+
+def hide_usager_ref(trajets: list, role: str) -> list:
+    """Vide le pseudonyme des abonnés pour le rôle direction.
+
+    Cahier des charges 7.3 (RGPD) : usager_ref n'est pas montré à la
+    direction ; l'exploitant le garde, à des fins de support (ANO-005).
+    """
+
+    if role == "direction":
+        for trajet in trajets:
+            trajet.usager_ref = None
+
+    return trajets
+

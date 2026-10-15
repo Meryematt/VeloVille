@@ -289,3 +289,36 @@ def test_indicateurs_accessibles_a_la_direction(client, jeton_direction, donnees
     assert stations.status_code == 200
     assert incidents.status_code == 200
     assert len(activite.json()["donnees"]) == 2
+
+
+# Pseudonyme d'abonné (non-régression ANO-005)
+
+@pytest.fixture()
+def trajet_abonne(db_session, donnees):
+    """Un trajet d'abonné, avec son pseudonyme."""
+
+    db_session.add(
+        Trajet(trajet_id="T3", velo_id="V0003", depart_horodatage=datetime(2026, 8, 26, 9, 0),
+               station_depart="S001", station_arrivee="S002", duree_secondes=600,
+               type_usager="abonne", usager_ref="U12345678")
+    )
+    db_session.flush()
+
+
+def test_usager_ref_masque_pour_la_direction(client, jeton_direction, trajet_abonne):
+    """La direction ne voit pas le pseudonyme de l'abonné (7.3, ANO-005)."""
+
+    response = client.get("/trajets", params={"station": "S001"}, headers=jeton_direction)
+
+    trajets = {t["trajet_id"]: t for t in response.json()["resultats"]}
+    assert trajets["T3"]["type_usager"] == "abonne"
+    assert trajets["T3"]["usager_ref"] is None
+
+
+def test_usager_ref_visible_pour_l_exploitant(client, jeton_exploitant, trajet_abonne):
+    """L'exploitant voit le pseudonyme, à des fins de support (7.3)."""
+
+    response = client.get("/trajets", params={"station": "S001"}, headers=jeton_exploitant)
+
+    trajets = {t["trajet_id"]: t for t in response.json()["resultats"]}
+    assert trajets["T3"]["usager_ref"] == "U12345678"
