@@ -43,7 +43,7 @@ la sauvegarde et la restauration, est dans
 [docs/procedure-deploiement.md](docs/procedure-deploiement.md).
 
 ```powershell
-git clone <adresse-du-depot> veloville
+git clone https://github.com/Meryematt/VeloVille.git veloville
 cd veloville
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1

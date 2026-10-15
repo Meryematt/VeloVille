@@ -26,7 +26,7 @@ psql --version
 ## 2. Récupérer le projet
 
 ```powershell
-git clone <adresse-du-depot> veloville
+git clone https://github.com/Meryematt/VeloVille.git veloville
 cd veloville
 ```
 
