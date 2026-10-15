@@ -23,6 +23,11 @@ $env:Path += ";C:\Program Files\PostgreSQL\18\bin"
 psql --version
 ```
 
+Le `18` est le numéro de version de PostgreSQL. Si vous avez installé une
+autre version, ouvrez le dossier `C:\Program Files\PostgreSQL` dans
+l'explorateur Windows : le nom du dossier qu'il contient (`16`, `17`...)
+est votre numéro, à mettre à la place de `18` ici et à l'étape 9.
+
 ## 2. Récupérer le projet
 
 ```powershell
@@ -50,8 +55,22 @@ Copy-Item .env.example .env
 python -c "import secrets; print(secrets.token_hex(32))"
 ```
 
-Ouvrir `.env` et coller le texte affiché après `JWT_SECRET=`. Les autres
-valeurs de `.env.example` conviennent pour un poste local :
+La deuxième commande affiche une longue suite de lettres et de chiffres :
+copiez-la. Ouvrez ensuite le fichier `.env` dans le Bloc-notes avec la
+commande suivante :
+
+```powershell
+notepad .env
+```
+
+Collez le texte copié juste après `JWT_SECRET=` (sur la même ligne, sans
+espace), puis enregistrez (Ctrl+S) et fermez le Bloc-notes.
+
+Remarque : dans l'explorateur Windows, un fichier dont le nom commence par
+un point, comme `.env`, peut être caché ; la commande `notepad .env`
+l'ouvre directement.
+
+Les autres valeurs de `.env.example` conviennent pour un poste local :
 
 | Variable | Rôle |
 |---|---|
@@ -143,8 +162,17 @@ export PATH="$PATH:/c/Program Files/PostgreSQL/18/bin"
 bash scripts/sauvegarde.sh
 ```
 
-Le script crée un fichier `sauvegardes/veloville_AAAAMMJJ_HHMMSS.dump` et
-affiche son chemin. En cas d'échec, il affiche une erreur et se termine avec
+Le script crée un fichier dans le dossier `sauvegardes/` et affiche son
+nom, par exemple :
+
+```
+Sauvegarde créée : sauvegardes/veloville_20261015_161604.dump
+```
+
+Le nom contient la date et l'heure de la sauvegarde (année, mois, jour,
+puis heure, minutes, secondes). Dans les commandes ci-dessous et à
+l'étape 11, remplacez `veloville_AAAAMMJJ_HHMMSS.dump` par ce nom réel.
+Pour revoir la liste des sauvegardes : `ls sauvegardes`. En cas d'échec, il affiche une erreur et se termine avec
 un code de retour non nul. Le dossier `sauvegardes/` est ignoré par Git.
 
 Vérifier qu'une sauvegarde est lisible :
@@ -179,3 +207,18 @@ pg_restore -U veloville -h localhost -d veloville --clean --if-exists sauvegarde
 
 Toutes les données sont remplacées par celles de la sauvegarde, comptes
 compris. Relancer ensuite l'API si elle était démarrée.
+
+## Problèmes fréquents
+
+| Message ou symptôme | Cause | Solution |
+|---|---|---|
+| `psql` n'est pas reconnu | PostgreSQL n'est pas dans le PATH de ce terminal | Refaire la commande `$env:Path += ...` de l'étape 1 (ou `export PATH=...` dans Git Bash), avec votre numéro de version |
+| `python` n'est pas reconnu, ou le Microsoft Store s'ouvre | Python n'a pas été ajouté au PATH à l'installation | Réinstaller Python en cochant « Add python.exe to PATH », puis ouvrir un nouveau terminal |
+| PowerShell refuse d'exécuter `Activate.ps1` | Les scripts sont bloqués par Windows | `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`, puis recommencer (étape 3) |
+| `échec de l'authentification par mot de passe` | Mauvais mot de passe pour PostgreSQL | Utilisateur `postgres` : le mot de passe choisi à l'installation. Utilisateur `veloville` : `veloville`. Vérifier aussi la ligne `DATABASE_URL` de `.env` |
+| `KeyError: 'JWT_SECRET'` ou `'DATABASE_URL'` au lancement | Le fichier `.env` manque ou une valeur est vide | Refaire l'étape 4, depuis le dossier `veloville` |
+| Le front affiche « L'API est injoignable » | L'API n'est pas démarrée, ou son terminal a été fermé | Relancer `uvicorn api.main:app` (étape 8) et laisser ce terminal ouvert |
+| Le front met plusieurs secondes à chaque clic | `API_URL` utilise `localhost` | Dans `.env` : `API_URL=http://127.0.0.1:8000`, puis relancer le front |
+| `error while attempting to bind on address` au lancement de l'API | Une API tourne déjà, dans un autre terminal | Fermer l'autre terminal (ou Ctrl+C dedans), puis relancer |
+| « Identifiant ou mot de passe incorrect » avec un compte fourni | Les comptes n'ont pas été chargés | Refaire `psql -U veloville -d veloville -f sql/comptes.sql` (étape 5) |
+| Les tests échouent avec une erreur de connexion | La base de test n'existe pas ou n'a pas ses tables | Refaire les commandes de l'étape 5 qui concernent `veloville_test` |

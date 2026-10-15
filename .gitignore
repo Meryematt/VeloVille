@@ -34,7 +34,6 @@ htmlcov/
 .ipynb_checkpoints/
 
 # Éditeurs et système
-.vscode/
 .idea/
 *.swp
 *.swo
@@ -52,5 +51,4 @@ journal_rejets*.log
 # Streamlit
 .streamlit/secrets.toml
 
-# Outils locaux
-.claude/
+
