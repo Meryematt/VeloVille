@@ -711,8 +711,8 @@ donc été vérifié avec l'alternative prévue par le plan (écran Stations,
 page au-delà de la dernière).
 
 Remarque : l'écran affiche alors « Page 9 sur 6 ». Ce n'est pas une
-exigence du cas, mais le champ « Page » pourrait être limité au nombre de
-pages existantes (voir axes d'amélioration).
+exigence du cas, mais ce texte n'a pas de sens pour l'utilisateur : il est
+traité dans l'anomalie [ANO-004](anomalies/ANO-004.md).
 
 Statut : OK
 
@@ -819,6 +819,19 @@ sans trace Python.
 Statut : OK
 
 ![ANO-003 rejeu](captures/ano003-rejeu-message-francais.png)
+
+### Rejeu après correction de ANO-004
+
+Rejoué le 15/10/2026 14:27 sur le commit `d8df546` (branche `fix/ano-004`),
+front redémarré, compte `direction01`, écran Stations, taille de page 20,
+page 7 (au-delà de la dernière page, comme la page 9 du constat).
+
+Résultat obtenu : « Aucun résultat pour ces critères. » puis « Page 7 : la
+dernière page est la page 6. ».
+
+Statut : OK
+
+![ANO-004 rejeu](captures/ano004-rejeu-page-au-dela.png)
 
 ## Synthèse
 
