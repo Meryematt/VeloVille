@@ -791,6 +791,22 @@ API_URL=http://127.0.0.1:8000
 0.02 secondes
 ```
 
+## Vérification complémentaire : adresse d'API mal écrite
+
+Hors plan de recette. Constatée pendant le rejeu de ANO-002, après une
+erreur de saisie dans la ligne `API_URL` du fichier `.env`.
+
+Date : 15/10/2026 ; version : `55ac61c`.
+
+Résultat obtenu : au lieu d'un message d'erreur en français, l'écran de
+connexion affiche la trace Python complète (`requests.exceptions.InvalidSchema`).
+
+Statut : KO (anomalie [ANO-003](anomalies/ANO-003.md))
+
+Preuve :
+
+![ANO-003 trace Python](captures/ano003-trace-python.png)
+
 ## Synthèse
 
 À remplir après la campagne : N cas exécutés sur 10 ; N OK, N KO, N NT ;
