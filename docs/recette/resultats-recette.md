@@ -835,13 +835,110 @@ Statut : OK
 
 ## Synthèse
 
-À remplir après la campagne : N cas exécutés sur 10 ; N OK, N KO, N NT ;
-N anomalies ouvertes, N corrigées.
+| | Premier passage (`v0.9.0`) | Après corrections (`4a412c1`) |
+|---|---|---|
+| Cas du plan exécutés | 10 sur 10 | 10 sur 10 |
+| OK | 9 | 10 |
+| KO | 1 (REC-02) | 0 |
+| Non testés (NT) | 0 | 0 |
 
-## Procès-verbal de recette
+Deux vérifications complémentaires ont été faites hors plan (temps de
+réponse, adresse d'API mal écrite) : KO au premier passage, OK après
+correction.
 
-À remplir à la fin de la campagne (modèle dans le plan de recette).
+| Anomalie | Symptôme | Sévérité | Priorité | Statut |
+|---|---|---|---|---|
+| [ANO-001](anomalies/ANO-001.md) | Lignes du journal d'import sans colonne ni valeur | S3 | P1 | corrigée, rejouée OK |
+| [ANO-002](anomalies/ANO-002.md) | Environ 4 secondes par écran dans le front | S2 | P1 | corrigée, rejouée OK |
+| [ANO-003](anomalies/ANO-003.md) | Trace Python à l'écran si l'adresse de l'API est mal écrite | S3 | P2 | corrigée, rejouée OK |
+| [ANO-004](anomalies/ANO-004.md) | « Page 9 sur 6 » au-delà de la dernière page | S3 | P3 | corrigée, rejouée OK |
+
+4 anomalies ouvertes, 4 corrigées et rejouées OK, 0 restant ouverte.
+Chaque correction a son commit, qui cite la fiche, et un test de
+non-régression. Après corrections : 108 tests automatisés réussis,
+couverture de `api/services` à 98 %.
+
+## Procès-verbal de recette - VéloVille V1 1.0.0
+
+### 1. Identification
+
+- Application : plateforme de valorisation des données VéloVille, V1.
+- Version testée : `v0.9.0`, puis corrections jusqu'au commit `4a412c1`
+  (livrée en version 1.0.0).
+- Date de la campagne : 15/10/2026.
+- Environnement : poste Windows 11, Python 3.14.7, PostgreSQL 18.6,
+  FastAPI 0.143.0, Streamlit 1.65.0.
+- Participants : Meryem ATTARI, Data Analyst, a déroulé la recette.
+
+### 2. Périmètre recetté
+
+Testé : les cas REC-01 à REC-10 du plan fourni par le commanditaire, plus
+deux vérifications complémentaires (temps de réponse de l'exigence 7.1,
+adresse d'API mal écrite).
+
+Non testé :
+
+- l'affichage sur tablette (768 px) : vérifié seulement sur un écran
+  d'ordinateur ;
+- la volumétrie cible de 3 millions de trajets : le jeu V1 en compte
+  2 002 ;
+- la purge en mode suppression réelle (seulement en simulation) et la
+  restauration d'une sauvegarde sur la base de travail (seulement vérifiée
+  avec `pg_restore --list`), pour ne pas modifier la base pendant la
+  campagne.
+
+### 3. Résultats de la campagne
+
+10 cas prévus, 10 exécutés : 9 OK, 1 KO, 0 NT au premier passage ; 10 OK
+après corrections. Anomalies : 4 ouvertes, 4 corrigées et rejouées OK.
+
+### 4. Réserves bloquantes
+
+Néant.
+
+### 5. Réserves non bloquantes
+
+- `GET /trajets` renvoie `usager_ref` (pseudonyme d'abonné) aussi au rôle
+  direction. Aucun écran du front ne l'affiche, mais l'API ne le masque
+  pas (cahier des charges, 7.3). Responsable : Meryem ATTARI. Échéance :
+  30/11/2026.
+
+### 6. Décision
+
+Recette **PRONONCÉE AVEC RÉSERVES**.
+
+Tous les cas du plan sont OK après correction des quatre anomalies, sans
+réserve bloquante. Une réserve non bloquante porte sur la protection de
+`usager_ref` vis-à-vis du rôle direction.
+
+### 7. Signatures
+
+Pour le commanditaire (VéloVille Hauts-de-France) : ................,
+le ../../2026
+
+Pour la Data Analyst : Meryem ATTARI, le 15/10/2026
 
 ## Axes d'amélioration
 
-À remplir à la fin de la campagne (au moins trois propositions argumentées).
+1. **Masquer `usager_ref` pour le rôle direction dans l'API.** C'est la
+   réserve du procès-verbal : le cahier des charges (7.3) ne veut pas que
+   la direction voie ce pseudonyme. Il suffit de ne pas renvoyer ce champ
+   quand le jeton porte le rôle `direction`.
+2. **Préparer la volumétrie cible (3 millions de trajets).** L'import ligne
+   par ligne suffit pour les 2 002 trajets de la V1, mais il serait lent
+   sur un an de données. Il faudrait traiter les lignes par lots, en
+   gardant les mêmes règles de fiabilisation, et vérifier les temps de
+   réponse de l'API sur ce volume.
+3. **Ajouter des tests de bout en bout du front** (par exemple avec
+   Playwright). Trois des quatre anomalies (ANO-002, ANO-003, ANO-004)
+   concernaient le front, qui n'a été vérifié qu'à la main : des tests
+   automatiques les auraient détectées plus tôt et éviteraient qu'elles
+   reviennent.
+4. **Automatiser la maintenance.** La V1 fournit les scripts de sauvegarde
+   et de purge ; il reste à les planifier (par exemple chaque nuit), comme
+   le prévoit le cahier des charges pour la V2, et à tester une
+   restauration complète sur une base dédiée.
+5. **Développer les fonctions reportées.** Le cahier des charges reporte à
+   une version ultérieure les données météo, l'état en temps réel des
+   stations, les prévisions de rééquilibrage et un rôle administrateur pour
+   gérer les comptes sans passer par un script SQL.
