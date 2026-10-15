@@ -37,8 +37,8 @@ ni dans l'URL.
 
 **`usager_ref`** : c'est un pseudonyme fourni par la billettique, aucune
 donnée directement identifiante n'est importée. Aucun écran du front
-n'affiche les trajets. Limite : l'API `GET /trajets` le renvoie aussi au
-rôle direction.
+n'affiche les trajets, et l'API `GET /trajets` le renvoie vide (`null`) au
+rôle direction ; seul l'exploitant le voit, à des fins de support.
 
 **Secrets de configuration** (`JWT_SECRET`, `DATABASE_URL`) : ils sont dans
 le fichier `.env`, ignoré par Git. Le fichier `.env.example`, versionné, ne

@@ -265,9 +265,6 @@ performance (voir « Axes d'amélioration »).
 
 ## Limites connues
 
-- `GET /trajets` renvoie `usager_ref` (pseudonyme d'abonné) aussi au rôle
-  direction. Aucun écran du front n'affiche les trajets, mais l'API ne le
-  masque pas.
 - Pour une ligne rejetée, seul le motif du rejet est journalisé : une
   correction faite avant le rejet sur la même ligne n'apparaît pas (cas du
   trajet T480152).
@@ -286,7 +283,6 @@ performance (voir « Axes d'amélioration »).
   fiabilisation.
 - **Période par défaut des indicateurs calculée à partir des données** :
   premier et dernier jour renvoyés par l'indicateur d'activité sans bornes.
-- **Masquer `usager_ref` pour le rôle direction** dans l'API.
 - **Planifier la purge** (par exemple chaque nuit) : la V1 fournit le
   script, la planification est prévue en V2 par le cahier des charges.
 - **Tests de bout en bout du front** (par exemple avec Playwright).
