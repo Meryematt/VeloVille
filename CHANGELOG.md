@@ -2,7 +2,33 @@
 
 Une section par version, les changements regroupés en « Ajouté »,
 « Modifié », « Corrigé ». Chaque version correspond à un tag Git
-(`v0.1.0`, `v0.9.0`...).
+(`v0.1.0`, `v0.9.0`, `v1.0.0`).
+
+## [1.0.0] - 2026-10-15
+
+Version livrée après recette : les cinq anomalies relevées sont corrigées
+et rejouées OK (voir `docs/recette/`).
+
+### Ajouté
+- Résultats de la recette (cas REC-01 à REC-10), fiches d'anomalie
+  ANO-001 à ANO-005, captures et procès-verbal (`docs/recette/`).
+- Tests de non-régression des cinq anomalies (110 tests au total,
+  couverture de 98 % sur `api/services`).
+
+### Modifié
+- `.env.example` et `front/api_client.py` : l'adresse de l'API est
+  `http://127.0.0.1:8000` au lieu de `http://localhost:8000`.
+- `GET /trajets` : `usager_ref` est vide (`null`) pour le rôle direction.
+- Front : au-delà de la dernière page, le texte indique la dernière page
+  existante.
+
+### Corrigé
+- ANO-001 : des lignes du journal d'import n'avaient ni colonne ni valeur.
+- ANO-002 : chaque écran du front mettait environ 4 secondes à s'afficher.
+- ANO-003 : une adresse d'API mal écrite affichait une trace Python dans le
+  front.
+- ANO-004 : l'écran affichait « Page 9 sur 6 » au-delà de la dernière page.
+- ANO-005 : l'API renvoyait le pseudonyme des abonnés au rôle direction.
 
 ## [0.9.0] - 2026-10-15
 
