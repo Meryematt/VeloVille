@@ -740,6 +740,34 @@ Vérification supplémentaire : l'écran Incidents affiche le même message.
 
 ![REC-10 API redémarrée](captures/rec10-5-stations-api-redemarree.png)
 
+## Vérification complémentaire : temps de réponse (exigence 7.1)
+
+Hors plan de recette. Le cahier des charges demande que toute consultation
+paginée réponde en moins de 2 secondes sur le jeu V1.
+
+Date : 15/10/2026 ; version : `0646a95`.
+
+Résultat obtenu : l'API répond en quelques millisecondes, mais chaque
+écran du front met environ 4 secondes à s'afficher. Chaque appel du front
+à l'API, à l'adresse `http://localhost:8000`, prend environ 2 secondes ;
+le même appel à `http://127.0.0.1:8000` est immédiat.
+
+Statut : KO (anomalie [ANO-002](anomalies/ANO-002.md))
+
+Preuve :
+
+```bash
+python -c "import time, requests; t = time.time(); requests.get('http://localhost:8000/sante'); print(round(time.time() - t, 2), 'secondes')"
+python -c "import time, requests; t = time.time(); requests.get('http://127.0.0.1:8000/sante'); print(round(time.time() - t, 2), 'secondes')"
+grep "^API_URL" .env
+```
+
+```text
+2.05 secondes
+0.0 secondes
+API_URL=http://localhost:8000
+```
+
 ## Synthèse
 
 À remplir après la campagne : N cas exécutés sur 10 ; N OK, N KO, N NT ;
