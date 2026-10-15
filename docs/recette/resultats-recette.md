@@ -807,6 +807,19 @@ Preuve :
 
 ![ANO-003 trace Python](captures/ano003-trace-python.png)
 
+### Rejeu après correction de ANO-003
+
+Rejoué le 15/10/2026 14:19 sur le commit `5bfbc93` (branche `fix/ano-003`),
+avec la même adresse mal écrite.
+
+Résultat obtenu : l'écran de connexion affiche « Impossible de contacter
+l'API. Vérifiez l'adresse API_URL dans le fichier .env. », en français et
+sans trace Python.
+
+Statut : OK
+
+![ANO-003 rejeu](captures/ano003-rejeu-message-francais.png)
+
 ## Synthèse
 
 À remplir après la campagne : N cas exécutés sur 10 ; N OK, N KO, N NT ;
