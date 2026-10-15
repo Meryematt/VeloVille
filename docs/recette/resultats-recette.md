@@ -833,18 +833,47 @@ Statut : OK
 
 ![ANO-004 rejeu](captures/ano004-rejeu-page-au-dela.png)
 
+## Vérification complémentaire : pseudonyme d'abonné et rôle direction
+
+Hors plan de recette. Relevée lors de la rédaction du procès-verbal
+(cahier des charges 7.3, RGPD : `usager_ref` n'est pas montré à la
+direction).
+
+Date : 15/10/2026 ; version : `1766888`.
+
+Résultat obtenu : avec un jeton du rôle direction, `GET /trajets` renvoie
+le pseudonyme des abonnés (`"usager_ref": "U6119911a"` pour T480276).
+
+Statut : KO (anomalie [ANO-005](anomalies/ANO-005.md))
+
+Preuve :
+
+![ANO-005 usager_ref visible par la direction](captures/ano005-usager-ref-direction.png)
+
+### Rejeu après correction de ANO-005
+
+Rejoué le 15/10/2026 14:55 sur le commit `6c86dfc` (branche `fix/ano-005`),
+API redémarrée, jeton du rôle direction, `GET /trajets?page=1&taille_page=20`.
+
+Résultat obtenu : le trajet d'abonné T480276 a `"usager_ref": null` dans la
+réponse donnée à la direction.
+
+Statut : OK
+
+![ANO-005 rejeu](captures/ano005-rejeu-usager-ref-null.png)
+
 ## Synthèse
 
-| | Premier passage (`v0.9.0`) | Après corrections (`4a412c1`) |
+| | Premier passage (`v0.9.0`) | Après corrections (`6c86dfc`) |
 |---|---|---|
 | Cas du plan exécutés | 10 sur 10 | 10 sur 10 |
 | OK | 9 | 10 |
 | KO | 1 (REC-02) | 0 |
 | Non testés (NT) | 0 | 0 |
 
-Deux vérifications complémentaires ont été faites hors plan (temps de
-réponse, adresse d'API mal écrite) : KO au premier passage, OK après
-correction.
+Trois vérifications complémentaires ont été faites hors plan (temps de
+réponse, adresse d'API mal écrite, pseudonyme d'abonné et rôle direction) :
+KO au premier passage, OK après correction.
 
 | Anomalie | Symptôme | Sévérité | Priorité | Statut |
 |---|---|---|---|---|
@@ -852,10 +881,11 @@ correction.
 | [ANO-002](anomalies/ANO-002.md) | Environ 4 secondes par écran dans le front | S2 | P1 | corrigée, rejouée OK |
 | [ANO-003](anomalies/ANO-003.md) | Trace Python à l'écran si l'adresse de l'API est mal écrite | S3 | P2 | corrigée, rejouée OK |
 | [ANO-004](anomalies/ANO-004.md) | « Page 9 sur 6 » au-delà de la dernière page | S3 | P3 | corrigée, rejouée OK |
+| [ANO-005](anomalies/ANO-005.md) | Pseudonyme d'abonné renvoyé au rôle direction | S2 | P1 | corrigée, rejouée OK |
 
-4 anomalies ouvertes, 4 corrigées et rejouées OK, 0 restant ouverte.
+5 anomalies ouvertes, 5 corrigées et rejouées OK, 0 restant ouverte.
 Chaque correction a son commit, qui cite la fiche, et un test de
-non-régression. Après corrections : 108 tests automatisés réussis,
+non-régression. Après corrections : 110 tests automatisés réussis,
 couverture de `api/services` à 98 %.
 
 ## Procès-verbal de recette - VéloVille V1 1.0.0
@@ -863,7 +893,7 @@ couverture de `api/services` à 98 %.
 ### 1. Identification
 
 - Application : plateforme de valorisation des données VéloVille, V1.
-- Version testée : `v0.9.0`, puis corrections jusqu'au commit `4a412c1`
+- Version testée : `v0.9.0`, puis corrections jusqu'au commit `6c86dfc`
   (livrée en version 1.0.0).
 - Date de la campagne : 15/10/2026.
 - Environnement : poste Windows 11, Python 3.14.7, PostgreSQL 18.6,
@@ -873,8 +903,8 @@ couverture de `api/services` à 98 %.
 ### 2. Périmètre recetté
 
 Testé : les cas REC-01 à REC-10 du plan fourni par le commanditaire, plus
-deux vérifications complémentaires (temps de réponse de l'exigence 7.1,
-adresse d'API mal écrite).
+trois vérifications complémentaires (temps de réponse de l'exigence 7.1,
+adresse d'API mal écrite, pseudonyme d'abonné et rôle direction).
 
 Non testé :
 
@@ -890,7 +920,7 @@ Non testé :
 ### 3. Résultats de la campagne
 
 10 cas prévus, 10 exécutés : 9 OK, 1 KO, 0 NT au premier passage ; 10 OK
-après corrections. Anomalies : 4 ouvertes, 4 corrigées et rejouées OK.
+après corrections. Anomalies : 5 ouvertes, 5 corrigées et rejouées OK.
 
 ### 4. Réserves bloquantes
 
@@ -898,18 +928,16 @@ Néant.
 
 ### 5. Réserves non bloquantes
 
-- `GET /trajets` renvoie `usager_ref` (pseudonyme d'abonné) aussi au rôle
-  direction. Aucun écran du front ne l'affiche, mais l'API ne le masque
-  pas (cahier des charges, 7.3). Responsable : Meryem ATTARI. Échéance :
-  30/11/2026.
+Néant. Le point relevé lors de la première rédaction de ce procès-verbal
+(`usager_ref` renvoyé au rôle direction) a été corrigé et rejoué : voir
+ANO-005.
 
 ### 6. Décision
 
-Recette **PRONONCÉE AVEC RÉSERVES**.
+Recette **PRONONCÉE**.
 
-Tous les cas du plan sont OK après correction des quatre anomalies, sans
-réserve bloquante. Une réserve non bloquante porte sur la protection de
-`usager_ref` vis-à-vis du rôle direction.
+Tous les cas du plan sont OK après correction des cinq anomalies, et aucune
+réserve ne reste ouverte.
 
 ### 7. Signatures
 
@@ -920,25 +948,21 @@ Pour la Data Analyst : Meryem ATTARI, le 15/10/2026
 
 ## Axes d'amélioration
 
-1. **Masquer `usager_ref` pour le rôle direction dans l'API.** C'est la
-   réserve du procès-verbal : le cahier des charges (7.3) ne veut pas que
-   la direction voie ce pseudonyme. Il suffit de ne pas renvoyer ce champ
-   quand le jeton porte le rôle `direction`.
-2. **Préparer la volumétrie cible (3 millions de trajets).** L'import ligne
+1. **Préparer la volumétrie cible (3 millions de trajets).** L'import ligne
    par ligne suffit pour les 2 002 trajets de la V1, mais il serait lent
    sur un an de données. Il faudrait traiter les lignes par lots, en
    gardant les mêmes règles de fiabilisation, et vérifier les temps de
    réponse de l'API sur ce volume.
-3. **Ajouter des tests de bout en bout du front** (par exemple avec
+2. **Ajouter des tests de bout en bout du front** (par exemple avec
    Playwright). Trois des quatre anomalies (ANO-002, ANO-003, ANO-004)
    concernaient le front, qui n'a été vérifié qu'à la main : des tests
    automatiques les auraient détectées plus tôt et éviteraient qu'elles
    reviennent.
-4. **Automatiser la maintenance.** La V1 fournit les scripts de sauvegarde
+3. **Automatiser la maintenance.** La V1 fournit les scripts de sauvegarde
    et de purge ; il reste à les planifier (par exemple chaque nuit), comme
    le prévoit le cahier des charges pour la V2, et à tester une
    restauration complète sur une base dédiée.
-5. **Développer les fonctions reportées.** Le cahier des charges reporte à
+4. **Développer les fonctions reportées.** Le cahier des charges reporte à
    une version ultérieure les données météo, l'état en temps réel des
    stations, les prévisions de rééquilibrage et un rôle administrateur pour
    gérer les comptes sans passer par un script SQL.
