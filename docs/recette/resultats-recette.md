@@ -820,6 +820,19 @@ Statut : OK
 
 ![ANO-003 rejeu](captures/ano003-rejeu-message-francais.png)
 
+### Rejeu après correction de ANO-004
+
+Rejoué le 15/10/2026 14:27 sur le commit `d8df546` (branche `fix/ano-004`),
+front redémarré, compte `direction01`, écran Stations, taille de page 20,
+page 7 (au-delà de la dernière page, comme la page 9 du constat).
+
+Résultat obtenu : « Aucun résultat pour ces critères. » puis « Page 7 : la
+dernière page est la page 6. ».
+
+Statut : OK
+
+![ANO-004 rejeu](captures/ano004-rejeu-page-au-dela.png)
+
 ## Synthèse
 
 À remplir après la campagne : N cas exécutés sur 10 ; N OK, N KO, N NT ;
